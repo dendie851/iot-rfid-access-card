@@ -1,0 +1,113 @@
+{
+	"info": {
+		"_postman_id": "a1b2c3d4-e5f6-4a5b-bc6d-7e8f9a0b1c2d",
+		"name": "IoT RFID Access System",
+		"description": "Collection for testing IoT RFID Gate Access Backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. Pay (Deduct Balance)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"card_id\": \"RFID123456\",\n    \"merchant_id\": 1,\n    \"amount\": 5000,\n    \"idempotency_key\": \"unique-uuid-12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/pay",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"pay"
+					]
+				},
+				"description": "Endpoint for ESP32 to request payment. Status will be PENDING."
+			},
+			"response": []
+		},
+		{
+			"name": "2. Confirm Gate Open",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"idempotency_key\": \"unique-uuid-12345\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{base_url}}/api/confirm",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"confirm"
+					]
+				},
+				"description": "Endpoint for ESP32 to confirm the gate has successfully opened. Status will change to SUCCESS."
+			},
+			"response": []
+		},
+		{
+			"name": "3. Get User Info & History",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api/user/RFID123456",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"RFID123456"
+					]
+				},
+				"description": "Endpoint for Frontend to check balance and transaction history."
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000",
+			"type": "string"
+		}
+	]
+}

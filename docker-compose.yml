@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:14-alpine
+    container_name: iot-gate-db
+    environment:
+      POSTGRES_USER: user_iot
+      POSTGRES_PASSWORD: password_iot
+      POSTGRES_DB: iot_gate_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+  backend:
+    build: ./backend
+    container_name: iot-gate-backend
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://user_iot:password_iot@db:5432/iot_gate_db
+      PORT: 3000
+    depends_on:
+      - db
+    command: npm run dev
+
+  frontend:
+    image: nginx:alpine
+    container_name: iot-gate-frontend
+    ports:
+      - "8080:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html

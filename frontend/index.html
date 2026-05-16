@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Gate Access - Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>SMART GATE ACCESS</h1>
+        </header>
+
+        <div class="search-box">
+            <input type="text" id="cardIdInput" placeholder="Masukkan ID Kartu (e.g. A1B2C3D4)" value="A1B2C3D4">
+            <button onclick="fetchUserData()">Cek</button>
+        </div>
+
+        <div class="balance-card">
+            <div class="balance-label">Saldo Saat Ini</div>
+            <div class="balance-amount" id="balanceDisplay">Rp 0</div>
+            <div class="user-name" id="userNameDisplay">Memuat...</div>
+        </div>
+
+        <div class="history-section">
+            <div class="section-title">
+                <span>Riwayat Terakhir</span>
+                <span style="font-size: 0.75rem; color: var(--text-muted);">10 Transaksi</span>
+            </div>
+            <div class="history-list" id="historyList">
+                <!-- Items will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
