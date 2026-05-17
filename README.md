@@ -1,6 +1,7 @@
 # Smart Gate & Merchant RFID Payment System
 
  In today's fast-paced world, traditional cash payments and manual ticket checking at gates, parking lots, and merchants create unnecessary delays and long queues. This project aims to solve that problem by implementing a reliable, contactless RFID "Tap & Go" payment system. By integrating an ESP32 microcontroller with a secure Node.js backend and a PostgreSQL database, this system provides a seamless, secure, and modern payment experience that benefits both businesses and customers.
+ 
  [Watch on YouTube Shorts](https://www.youtube.com/shorts/lGFEGifkuyw)
 
 
