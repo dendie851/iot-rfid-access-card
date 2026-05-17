@@ -64,18 +64,18 @@ app.post('/api/pay', async (req, res) => {
             [amount, card_id]
         );
 
-        // Record Transaction as PENDING
+        // Record Transaction as SUCCESS (Skipping PENDING phase for testing)
         const txResult = await client.query(
             'INSERT INTO transactions (card_id, merchant_id, amount, idempotency_key, status) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-            [card_id, merchant_id, amount, idempotency_key, 'PENDING']
+            [card_id, merchant_id, amount, idempotency_key, 'SUCCESS']
         );
 
         await client.query('COMMIT');
 
         res.json({
-            status: 'PENDING',
+            status: 'SUCCESS',
             transaction_id: txResult.rows[0].id,
-            message: 'Payment deducted, awaiting gate confirmation'
+            message: 'Payment successful'
         });
 
     } catch (err) {
@@ -193,6 +193,6 @@ cron.schedule('* * * * *', async () => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Backend running on port ${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Backend running on port ${PORT} (accessible via network)`);
 });

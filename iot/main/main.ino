@@ -1,3 +1,4 @@
+#include <Arduino.h>
 /**
  * IoT Smart Gate Access System - ESP32 Code
  * Hardware: ESP32, RFID RC522, Servo MG996R/SG90, Buzzer
@@ -18,9 +19,9 @@
 #include <ESP32Servo.h>
 
 // --- CONFIGURATION ---
-const char* ssid = "YOUR_WIFI_SSID";
-const char* password = "YOUR_WIFI_PASSWORD";
-const char* serverUrl = "http://192.168.1.100:3000/api"; // Replace with your backend IP
+const char* ssid = "PutriTunggal";
+const char* password = "uu311009";
+const char* serverUrl = "http://192.168.100.35:3000/api"; // Replace with your backend IP
 const char* deviceId = "GATE_01";
 const int merchantId = 1;
 const float gateFee = 2000.00;
@@ -28,7 +29,7 @@ const float gateFee = 2000.00;
 // Pins
 #define SS_PIN 5
 #define RST_PIN 22
-#define SERVO_PIN 18
+#define SERVO_PIN 13
 
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 Servo gateServo;
@@ -42,6 +43,12 @@ FailedTx failedBuffer[5];
 int bufferIndex = 0;
 int bufferCount = 0;
 
+// Function Prototypes (Needed for CPP)
+void processPayment(String cardId, String idempotencyKey);
+void confirmPayment(String idempotencyKey);
+void openGate();
+void saveToBuffer(String cardId, String idempotencyKey);
+
 void setup() {
     Serial.begin(115200);
     SPI.begin();
@@ -50,13 +57,20 @@ void setup() {
     gateServo.attach(SERVO_PIN);
     gateServo.write(0); // Close gate
 
-    // Connect to WiFi
     WiFi.begin(ssid, password);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
         Serial.print(".");
     }
     Serial.println("\nWiFi Connected");
+
+    // Check RFID Module
+    byte v = mfrc522.PCD_ReadRegister(mfrc522.VersionReg);
+    Serial.print("MFRC522 Software Version: 0x");
+    Serial.print(v, HEX);
+    if (v == 0x91) Serial.println(" (v1.0 detected)");
+    else if (v == 0x92) Serial.println(" (v2.0 detected)");
+    else Serial.println(" (unknown or not detected)");
 }
 
 void loop() {
@@ -71,10 +85,14 @@ void loop() {
         cardId += String(mfrc522.uid.uidByte[i], HEX);
     }
     cardId.toUpperCase();
-    Serial.println("Card Detected: " + cardId);
+    
+    Serial.println("\n--------------------------");
+    Serial.println("KARTU TERDETEKSI!");
+    Serial.println("UID: " + cardId);
+    Serial.println("--------------------------");
 
     // 1. Process Payment
-    String idempotencyKey = deviceId + "_" + cardId + "_" + String(millis());
+    String idempotencyKey = String(deviceId) + "_" + cardId + "_" + String(millis());
     processPayment(cardId, idempotencyKey);
 
     mfrc522.PICC_HaltA();
@@ -107,15 +125,15 @@ void processPayment(String cardId, String idempotencyKey) {
         StaticJsonDocument<200> resDoc;
         deserializeJson(resDoc, response);
 
-        if (resDoc["status"] == "PENDING") {
-            int txId = resDoc["transaction_id"];
-            Serial.println("Payment Success (Pending Confirmation)");
+        if (resDoc["status"] == "SUCCESS") {
+            // int txId = resDoc["transaction_id"];
+            Serial.println("Payment Success");
             
             // 2. Open Gate
             openGate();
 
-            // 3. Confirm Success
-            confirmPayment(txId);
+            // 3. Confirm Success no longer needed
+            // confirmPayment(idempotencyKey);
         } else {
             Serial.println("Payment Failed: " + String((const char*)resDoc["error"]));
         }
@@ -126,13 +144,13 @@ void processPayment(String cardId, String idempotencyKey) {
     http.end();
 }
 
-void confirmPayment(int txId) {
+void confirmPayment(String idempotencyKey) {
     HTTPClient http;
     http.begin(String(serverUrl) + "/confirm");
     http.addHeader("Content-Type", "application/json");
 
-    StaticJsonDocument<100> doc;
-    doc["transaction_id"] = txId;
+    StaticJsonDocument<128> doc;
+    doc["idempotency_key"] = idempotencyKey;
 
     String requestBody;
     serializeJson(doc, requestBody);

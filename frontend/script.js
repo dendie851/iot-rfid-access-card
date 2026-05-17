@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = '/api';
 
 async function fetchUserData() {
     const cardId = document.getElementById('cardIdInput').value;
@@ -7,7 +7,7 @@ async function fetchUserData() {
     try {
         const response = await fetch(`${API_BASE}/user/${cardId}`);
         if (!response.ok) throw new Error('Kartu tidak ditemukan');
-        
+
         const data = await response.json();
         updateUI(data);
     } catch (err) {
@@ -35,7 +35,7 @@ function updateUI(data) {
         });
 
         const statusClass = `status-${tx.status.toLowerCase()}`;
-        
+
         const item = document.createElement('div');
         item.className = 'history-item';
         item.innerHTML = `
