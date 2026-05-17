@@ -1,6 +1,9 @@
 # Smart Gate & Merchant RFID Payment System
 
+**🎥 Live Video Demonstration:** [Watch on YouTube Shorts](https://www.youtube.com/shorts/lGFEGifkuyw)
+
 ## Table of Contents
+0. [Live Video Demonstration](#-live-video-demonstration)
 1. [Benefits of RFID Card Payment for Merchants](#1-benefits-of-rfid-card-payment-for-merchants)
 2. [What is RFID Technology and its Frequency?](#2-what-is-rfid-technology-and-its-frequency)
 3. [System Architecture & Design](#3-system-architecture--design)
